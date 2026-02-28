@@ -1,6 +1,7 @@
 import pandas as pd
 import re
-
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.compose import ColumnTransformer
 
 class DataPreprocessor:
     def __init__(self, filepath):
@@ -217,18 +218,22 @@ class DataPreprocessor:
         # -------------------------
         # Drop unused raw columns
         # -------------------------
-        df = df.drop(
-            columns=[
-                "processor_brand",
-                "processor_name",
-                "processor_gnrtn",
-                "ssd",
-                "hdd",
-                "ssd_gb",
-                "hdd_gb",
-                "weight"
-            ]
-        )
+        # df = df.drop(
+        #     columns=[
+        #         "processor_brand",
+        #         "processor_name",
+        #         "processor_gnrtn",
+        #         "ssd",
+        #         "hdd",
+        #         "ssd_gb",
+        #         "hdd_gb",
+        #         "weight",
+        #         "display_size",
+        #         "warranty",
+        #         "star_rating"
+
+        #     ]
+        # )
 
         # -------------------------
         # Rename for clarity
@@ -240,6 +245,10 @@ class DataPreprocessor:
                 "latest_price": "price",
             }
         )
-
-        self.df = df
-        return df
+        columns_to_scale = ["ram","gpu","price", "total_storage","weight_type","cpu_score"]
+        scaler = MinMaxScaler()
+        # Create scaled versions without touching originals
+        for col in columns_to_scale:
+            df[col + "_scaled"] = scaler.fit_transform(df[[col]])
+        df["price_scaled"]=1-df["price_scaled"]
+        return df       
