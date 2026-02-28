@@ -68,9 +68,9 @@ criteria_cols = [
     "ram_scaled",
     "gpu_scaled",
     "price_scaled",
-    "storage_scaled",
-    "weight_scaled",
-    "cpu_scaled"
+    "total_storage_scaled",
+    "weight_type_scaled",
+    "cpu_score_scaled"
 ]
 
 mcda = MCDA(weights, criteria_cols)
