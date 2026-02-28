@@ -1,5 +1,6 @@
 from data_preprocessing import DataPreprocessor
 from ahp import AHP
+from mcda import MCDA
 import numpy as np
 
 preprocessor=DataPreprocessor("data/laptops.csv")
@@ -62,3 +63,18 @@ weights = result["weights"]
 print(criteria)
 print("Weights:", weights)
 print("CR:", result["consistency_ratio"])
+
+criteria_cols = [
+    "ram_scaled",
+    "gpu_scaled",
+    "price_scaled",
+    "storage_scaled",
+    "weight_scaled",
+    "cpu_scaled"
+]
+
+mcda = MCDA(weights, criteria_cols)
+
+ranked_df = mcda.compute_scores(data)
+
+print(ranked_df.head(10))
