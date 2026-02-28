@@ -23,7 +23,19 @@ class DataPreprocessor:
             return 0
         match = re.search(r"[\d.]+", str(value))
         return float(match.group()) if match else 0
+    # -----------------------------
+    # Convert Weights to numeric
+    # -----------------------------
+    @staticmethod
+    def encode_weight_type(value):
+        mapping = {
+            "casual": 2,
+            "thinnlight": 1,
+            "gaming": 3
+        }
 
+        value = str(value).lower().replace(" ", "")
+        return mapping.get(value, 2)   # default = Casual
     # -----------------------------
     # Convert SSD/HDD to GB
     # -----------------------------
@@ -96,6 +108,8 @@ class DataPreprocessor:
                 tier_score = 9
             elif "athlon" in name:
                 tier_score = 2
+            elif "apu dual" in name:
+                tier_score =2
             else:
                 tier_score = 4
 
@@ -119,11 +133,23 @@ class DataPreprocessor:
         gen_score = 0
 
         numbers = re.findall(r'\d+', gen)
+
         if numbers:
-            gen_score = int(numbers[0]) * 0.5
+            gen_num = int(numbers[0])
 
-        score += gen_score
+        # Intel style: 10th, 11th, 12th
+        if brand == "intel" and gen_num < 50:
+            gen_score = gen_num * 0.5
 
+        # AMD Ryzen 3000, 5000 etc
+        elif brand == "amd" and gen_num >= 1000:
+            gen_score = (gen_num // 1000) * 1.5
+
+        # Apple M1, M2 handled in tier already
+        else:
+            gen_score = gen_num * 0.3
+
+        score+=gen_score
         return score
 
     # -----------------------------
@@ -148,6 +174,7 @@ class DataPreprocessor:
                 "processor_gnrtn",
                 "ram_gb",
                 "ssd",
+                "hdd",
                 "graphic_card_gb",
                 "weight",
                 "display_size",
@@ -166,11 +193,13 @@ class DataPreprocessor:
         # Clean SSD
         # -------------------------
         df["ssd_gb"] = df["ssd"].apply(self.convert_storage_to_gb)
+        df["hdd_gb"] = df["hdd"].apply(self.convert_storage_to_gb)
+        df["total_storage"] = df["ssd_gb"] + df["hdd_gb"]
 
         # -------------------------
         # Clean Weight
         # -------------------------
-        df["weight"] = df["weight"].apply(self.extract_number)
+        df["weight_type"] = df["weight"].apply(self.encode_weight_type)
 
         # -------------------------
         # Clean Display Size
@@ -181,11 +210,7 @@ class DataPreprocessor:
         # Compute CPU Score
         # -------------------------
         df["cpu_score"] = df.apply(
-            lambda row: self.compute_cpu_score(
-                row["processor_brand"],
-                row["processor_name"],
-                row["processor_gnrtn"],
-            ),
+            lambda row: self.compute_cpu_score(row),
             axis=1,
         )
 
@@ -198,6 +223,10 @@ class DataPreprocessor:
                 "processor_name",
                 "processor_gnrtn",
                 "ssd",
+                "hdd",
+                "ssd_gb",
+                "hdd_gb",
+                "weight"
             ]
         )
 
