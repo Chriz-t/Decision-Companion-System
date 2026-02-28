@@ -214,27 +214,6 @@ class DataPreprocessor:
             lambda row: self.compute_cpu_score(row),
             axis=1,
         )
-
-        # -------------------------
-        # Drop unused raw columns
-        # -------------------------
-        # df = df.drop(
-        #     columns=[
-        #         "processor_brand",
-        #         "processor_name",
-        #         "processor_gnrtn",
-        #         "ssd",
-        #         "hdd",
-        #         "ssd_gb",
-        #         "hdd_gb",
-        #         "weight",
-        #         "display_size",
-        #         "warranty",
-        #         "star_rating"
-
-        #     ]
-        # )
-
         # -------------------------
         # Rename for clarity
         # -------------------------
