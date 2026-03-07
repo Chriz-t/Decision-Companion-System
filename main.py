@@ -49,7 +49,7 @@ def build_ahp_matrix(criteria):
 
     return matrix
 
-criteria = ["RAM", "GPU", "Price", "Storage", "Weight", "CPU"]
+criteria = ["RAM", "GPU", "Price", "Storage", "CPU"]
 
 comp_matrix = build_ahp_matrix(criteria)
 
@@ -69,12 +69,11 @@ criteria_cols = [
     "gpu_scaled",
     "price_scaled",
     "total_storage_scaled",
-    "weight_type_scaled",
     "cpu_score_scaled"
 ]
 
 mcda = MCDA(weights, criteria_cols)
 
 ranked_df = mcda.compute_scores(data)
-
-print(ranked_df.head(10))
+#print(ranked_df.columns.tolist())
+print(ranked_df[["brand","model","processor_brand","processor_name","processor_gnrtn","ram","total_storage","price"]].head(10))
