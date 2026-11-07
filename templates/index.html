@@ -258,6 +258,20 @@
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    /* This ONLY runs on screens smaller than 768px (Mobile) */
+    @media (max-width: 767px) {
+      .laptop-card {
+      /* Changes the horizontal row layout into a clean vertical stack */
+        grid-template-columns: 1fr; 
+        gap: 12px;
+        padding: 16px; /* Reduces padding slightly so it fits mobile screens */
+      }
+
+      /* Optional: Prevents the hover effect from feeling weird on mobile touchscreens */
+      .laptop-card:hover {
+        transform: none; 
+      }
+    }
 
     .rank-num {
       font-family: var(--font-m); font-size: 1.4rem; font-weight: 500;
